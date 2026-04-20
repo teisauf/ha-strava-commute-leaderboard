@@ -1,0 +1,68 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Tilføj Strava-atlet",
+        "description": "Giv denne atlet et visningsnavn (f.eks. fornavn). Strava-login sker i næste trin.",
+        "data": {
+          "athlete_name": "Visningsnavn"
+        }
+      },
+      "pick_implementation": {
+        "title": "Log ind på Strava"
+      }
+    },
+    "abort": {
+      "already_configured": "Denne Strava-atlet er allerede tilføjet.",
+      "missing_athlete_id": "Strava returnerede ikke et athlete_id.",
+      "oauth_error": "OAuth-godkendelse fejlede.",
+      "oauth_timeout": "OAuth-godkendelsen timede ud.",
+      "oauth_unauthorized": "OAuth-godkendelsen blev ikke givet.",
+      "oauth_failed": "OAuth-godkendelse fejlede.",
+      "missing_credentials": "Ingen Strava application credentials konfigureret.",
+      "authorize_url_timeout": "Kunne ikke generere autorisations-URL i tide.",
+      "no_url_available": "Ingen autorisations-URL tilgængelig.",
+      "user_rejected_authorize": "Autorisation blev afvist."
+    },
+    "create_entry": {
+      "default": "Strava-atlet tilføjet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Beregning af commute-stats",
+        "data": {
+          "co2_per_km": "CO₂ sparet per km (kg)",
+          "cost_per_km": "Penge sparet per km",
+          "currency": "Valutasymbol",
+          "streak_tolerance_days": "Streak-tolerance (arbejdsdage tilladt uden commute)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "distance_ytd": {"name": "Commute-distance YTD"},
+      "rides_ytd": {"name": "Antal commutes YTD"},
+      "time_ytd": {"name": "Commute-tid YTD"},
+      "elevation_ytd": {"name": "Commute-højdemeter YTD"},
+      "avg_speed": {"name": "Gennemsnitsfart på commute"},
+      "streak_current": {"name": "Nuværende streak"},
+      "streak_longest": {"name": "Længste streak"},
+      "days_this_month": {"name": "Pendledage denne måned"},
+      "last_ride": {"name": "Seneste commute"},
+      "co2_saved": {"name": "CO₂ sparet YTD"},
+      "money_saved": {"name": "Penge sparet YTD"},
+      "leader": {"name": "Fører lige nu"},
+      "margin_km": {"name": "Forspring i km"},
+      "margin_percent": {"name": "Forspring i %"}
+    }
+  },
+  "services": {
+    "refresh": {
+      "name": "Opdater Strava-data",
+      "description": "Henter nye commute-aktiviteter for alle konfigurerede atleter."
+    }
+  }
+}

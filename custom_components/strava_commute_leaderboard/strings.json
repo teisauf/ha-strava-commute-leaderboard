@@ -1,0 +1,68 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add Strava athlete",
+        "description": "Give this athlete a display name (e.g. your first name). You will authorize Strava next.",
+        "data": {
+          "athlete_name": "Display name"
+        }
+      },
+      "pick_implementation": {
+        "title": "Authenticate with Strava"
+      }
+    },
+    "abort": {
+      "already_configured": "This Strava athlete is already set up.",
+      "missing_athlete_id": "Strava did not return an athlete id.",
+      "oauth_error": "OAuth authorization failed.",
+      "oauth_timeout": "OAuth authorization timed out.",
+      "oauth_unauthorized": "OAuth authorization was not granted.",
+      "oauth_failed": "OAuth authorization failed.",
+      "missing_credentials": "No Strava application credentials configured.",
+      "authorize_url_timeout": "Timed out generating authorize URL.",
+      "no_url_available": "No authorize URL available.",
+      "user_rejected_authorize": "Authorization was rejected."
+    },
+    "create_entry": {
+      "default": "Successfully linked Strava athlete."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Commute calculation settings",
+        "data": {
+          "co2_per_km": "CO₂ saved per km (kg)",
+          "cost_per_km": "Money saved per km",
+          "currency": "Currency symbol",
+          "streak_tolerance_days": "Streak tolerance (workdays allowed without commute)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "distance_ytd": {"name": "Commute distance YTD"},
+      "rides_ytd": {"name": "Commute rides YTD"},
+      "time_ytd": {"name": "Commute time YTD"},
+      "elevation_ytd": {"name": "Commute elevation YTD"},
+      "avg_speed": {"name": "Average commute speed"},
+      "streak_current": {"name": "Current streak"},
+      "streak_longest": {"name": "Longest streak"},
+      "days_this_month": {"name": "Commute days this month"},
+      "last_ride": {"name": "Last commute"},
+      "co2_saved": {"name": "CO₂ saved YTD"},
+      "money_saved": {"name": "Money saved YTD"},
+      "leader": {"name": "Current leader"},
+      "margin_km": {"name": "Leader margin"},
+      "margin_percent": {"name": "Leader margin (%)"}
+    }
+  },
+  "services": {
+    "refresh": {
+      "name": "Refresh Strava data",
+      "description": "Manually trigger a fetch of new commute activities for all configured athletes."
+    }
+  }
+}

@@ -1,0 +1,135 @@
+# Strava Commute Leaderboard — Example Lovelace View
+#
+# Paste this into: Settings → Dashboards → Edit Dashboard → Raw configuration editor
+# (or as a new view in an existing dashboard).
+#
+# Replace `teis` and `anna` below with the entity-name slugs that match your setup.
+# Find them in: Developer Tools → States → filter "distance_ytd".
+#
+# Prerequisites (install via HACS Frontend):
+#   - custom:bar-card       https://github.com/custom-cards/bar-card
+#   - custom:apexcharts-card https://github.com/RomRider/apexcharts-card
+
+title: Commute Leaderboard
+path: commute
+icon: mdi:bike-fast
+cards:
+  - type: markdown
+    content: >-
+      ## {% if states('sensor.commute_leaderboard_leader') not in ['unknown',
+      'unavailable', none] %} {{ states('sensor.commute_leaderboard_leader') }}
+      fører med {{ states('sensor.commute_leaderboard_margin_km') }} km {% else
+      %} Venter på data… {% endif %}
+
+  - type: custom:bar-card
+    title: Commute-km år-til-dato
+    columns: 1
+    positions:
+      icon: 'off'
+      indicator: inside
+      name: outside
+      value: inside
+    entities:
+      - entity: sensor.teis_distance_ytd
+        name: Teis
+        color: '#fc4c02'
+      - entity: sensor.anna_distance_ytd
+        name: Anna
+        color: '#2fb5d8'
+
+  - type: custom:apexcharts-card
+    header:
+      show: true
+      title: Akkumulerede commute-km over året
+      show_states: true
+      colorize_states: true
+    graph_span: 365d
+    span:
+      start: year
+    yaxis:
+      - decimals: 0
+    series:
+      - entity: sensor.teis_distance_ytd
+        name: Teis
+        color: '#fc4c02'
+        type: line
+        stroke_width: 3
+        statistics:
+          type: max
+          period: day
+      - entity: sensor.anna_distance_ytd
+        name: Anna
+        color: '#2fb5d8'
+        type: line
+        stroke_width: 3
+        statistics:
+          type: max
+          period: day
+
+  - type: entities
+    title: Denne måned & streaks
+    show_header_toggle: false
+    entities:
+      - entity: sensor.teis_days_this_month
+        name: Teis — pendledage i denne måned
+      - entity: sensor.anna_days_this_month
+        name: Anna — pendledage i denne måned
+      - type: divider
+      - entity: sensor.teis_streak_current
+        name: Teis streak
+        icon: mdi:fire
+      - entity: sensor.anna_streak_current
+        name: Anna streak
+        icon: mdi:fire
+      - entity: sensor.teis_streak_longest
+        name: Teis — årets længste
+      - entity: sensor.anna_streak_longest
+        name: Anna — årets længste
+
+  - type: glance
+    title: Pendlede de i dag?
+    state_color: true
+    entities:
+      - entity: sensor.teis_last_ride
+        name: Teis
+      - entity: sensor.anna_last_ride
+        name: Anna
+
+  - type: entities
+    title: Ugentlige sejre
+    entities:
+      - entity: sensor.weekly_wins_teis
+      - entity: sensor.weekly_wins_anna
+
+  - type: entities
+    title: Sundt for planeten & pengepungen
+    entities:
+      - entity: sensor.teis_co2_saved
+        icon: mdi:leaf
+      - entity: sensor.anna_co2_saved
+        icon: mdi:leaf
+      - type: divider
+      - entity: sensor.teis_money_saved
+        icon: mdi:cash-multiple
+      - entity: sensor.anna_money_saved
+        icon: mdi:cash-multiple
+
+  - type: entities
+    title: Detaljerede stats
+    entities:
+      - entity: sensor.teis_avg_speed
+      - entity: sensor.anna_avg_speed
+      - type: divider
+      - entity: sensor.teis_time_ytd
+      - entity: sensor.anna_time_ytd
+      - type: divider
+      - entity: sensor.teis_elevation_ytd
+      - entity: sensor.anna_elevation_ytd
+
+  - type: button
+    tap_action:
+      action: call-service
+      service: strava_commute_leaderboard.refresh
+    name: Opdater nu
+    icon: mdi:refresh
+    show_state: false
