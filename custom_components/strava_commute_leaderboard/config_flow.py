@@ -68,14 +68,14 @@ class StravaCommuteOAuthFlow(
             self._athlete_name = user_input[CONF_ATHLETE_NAME].strip()
             self._client_id = user_input[CONF_CLIENT_ID].strip()
             self._client_secret = user_input[CONF_CLIENT_SECRET].strip()
-            if not self._athlete_name or not self._client_id or not self._client_secret:
-                errors: dict[str, str] = {}
-                if not self._athlete_name:
-                    errors[CONF_ATHLETE_NAME] = "required"
-                if not self._client_id:
-                    errors[CONF_CLIENT_ID] = "required"
-                if not self._client_secret:
-                    errors[CONF_CLIENT_SECRET] = "required"
+            errors: dict[str, str] = {}
+            if not self._athlete_name:
+                errors[CONF_ATHLETE_NAME] = "required"
+            if not self._client_id:
+                errors[CONF_CLIENT_ID] = "required"
+            if not self._client_secret:
+                errors[CONF_CLIENT_SECRET] = "required"
+            if errors:
                 return self.async_show_form(
                     step_id="user",
                     data_schema=self.add_suggested_values_to_schema(
