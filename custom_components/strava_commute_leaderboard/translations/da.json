@@ -26,6 +26,11 @@
       "no_url_available": "Ingen autorisations-URL tilgængelig.",
       "user_rejected_authorize": "Autorisation blev afvist."
     },
+    "error": {
+      "empty_athlete_name": "Visningsnavn må ikke være tomt.",
+      "empty_client_id": "Client ID må ikke være tomt.",
+      "empty_client_secret": "Client Secret må ikke være tomt."
+    },
     "create_entry": {
       "default": "Strava-atlet tilføjet."
     }

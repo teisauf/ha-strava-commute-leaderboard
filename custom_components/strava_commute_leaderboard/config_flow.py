@@ -70,11 +70,11 @@ class StravaCommuteOAuthFlow(
             self._client_secret = user_input[CONF_CLIENT_SECRET].strip()
             errors: dict[str, str] = {}
             if not self._athlete_name:
-                errors[CONF_ATHLETE_NAME] = "required"
+                errors[CONF_ATHLETE_NAME] = "empty_athlete_name"
             if not self._client_id:
-                errors[CONF_CLIENT_ID] = "required"
+                errors[CONF_CLIENT_ID] = "empty_client_id"
             if not self._client_secret:
-                errors[CONF_CLIENT_SECRET] = "required"
+                errors[CONF_CLIENT_SECRET] = "empty_client_secret"
             if errors:
                 return self.async_show_form(
                     step_id="user",

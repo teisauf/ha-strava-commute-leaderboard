@@ -26,6 +26,11 @@
       "no_url_available": "No authorize URL available.",
       "user_rejected_authorize": "Authorization was rejected."
     },
+    "error": {
+      "empty_athlete_name": "Display name cannot be empty.",
+      "empty_client_id": "Client ID cannot be empty.",
+      "empty_client_secret": "Client Secret cannot be empty."
+    },
     "create_entry": {
       "default": "Successfully linked Strava athlete."
     }
