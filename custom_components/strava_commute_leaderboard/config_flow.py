@@ -7,6 +7,7 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlowResult, OptionsFlow, ConfigEntry
+from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
 from homeassistant.core import callback
 from homeassistant.helpers import config_entry_oauth2_flow
 
@@ -22,6 +23,8 @@ from .const import (
     DEFAULT_SCOPE,
     DEFAULT_STREAK_TOLERANCE,
     DOMAIN,
+    OAUTH2_AUTHORIZE,
+    OAUTH2_TOKEN,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -38,6 +41,8 @@ class StravaCommuteOAuthFlow(
     def __init__(self) -> None:
         super().__init__()
         self._athlete_name: str | None = None
+        self._client_id: str | None = None
+        self._client_secret: str | None = None
 
     @property
     def logger(self) -> logging.Logger:
@@ -50,15 +55,29 @@ class StravaCommuteOAuthFlow(
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Step 1: ask for the athlete display name, then kick off OAuth."""
+        """Step 1: ask for athlete name + app credentials, then kick off OAuth."""
         if user_input is not None:
             self._athlete_name = user_input[CONF_ATHLETE_NAME].strip()
-            return await self.async_step_pick_implementation()
+            self._client_id = user_input[CONF_CLIENT_ID].strip()
+            self._client_secret = user_input[CONF_CLIENT_SECRET].strip()
+            self.flow_impl = config_entry_oauth2_flow.LocalOAuth2Implementation(
+                self.hass,
+                DOMAIN,
+                self._client_id,
+                self._client_secret,
+                OAUTH2_AUTHORIZE,
+                OAUTH2_TOKEN,
+            )
+            return await self.async_step_auth()
 
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
-                {vol.Required(CONF_ATHLETE_NAME): str},
+                {
+                    vol.Required(CONF_ATHLETE_NAME): str,
+                    vol.Required(CONF_CLIENT_ID): str,
+                    vol.Required(CONF_CLIENT_SECRET): str,
+                },
             ),
         )
 
@@ -75,7 +94,13 @@ class StravaCommuteOAuthFlow(
         name = self._athlete_name or athlete.get("firstname") or f"athlete_{athlete_id}"
         return self.async_create_entry(
             title=name,
-            data={**data, CONF_ATHLETE_NAME: name, "athlete_id": athlete_id},
+            data={
+                **data,
+                CONF_ATHLETE_NAME: name,
+                "athlete_id": athlete_id,
+                CONF_CLIENT_ID: self._client_id,
+                CONF_CLIENT_SECRET: self._client_secret,
+            },
         )
 
     @staticmethod

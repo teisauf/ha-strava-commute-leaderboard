@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_CLIENT_ID, CONF_CLIENT_SECRET
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import config_entry_oauth2_flow
@@ -12,6 +13,8 @@ from homeassistant.helpers.event import async_track_time_change
 from .const import (
     CONF_ATHLETE_NAME,
     DOMAIN,
+    OAUTH2_AUTHORIZE,
+    OAUTH2_TOKEN,
     REFRESH_HOUR,
     REFRESH_MINUTE,
     SERVICE_REFRESH,
@@ -27,11 +30,23 @@ UNSUB_DAILY_KEY = "_daily_refresh_unsub"
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up a Strava athlete from a config entry."""
-    implementation = (
-        await config_entry_oauth2_flow.async_get_config_entry_implementation(
-            hass, entry
+    client_id = entry.data.get(CONF_CLIENT_ID)
+    client_secret = entry.data.get(CONF_CLIENT_SECRET)
+    if client_id and client_secret:
+        implementation = config_entry_oauth2_flow.LocalOAuth2Implementation(
+            hass,
+            DOMAIN,
+            client_id,
+            client_secret,
+            OAUTH2_AUTHORIZE,
+            OAUTH2_TOKEN,
         )
-    )
+    else:
+        implementation = (
+            await config_entry_oauth2_flow.async_get_config_entry_implementation(
+                hass, entry
+            )
+        )
     oauth_session = config_entry_oauth2_flow.OAuth2Session(hass, entry, implementation)
 
     athlete_id = entry.data.get("athlete_id")

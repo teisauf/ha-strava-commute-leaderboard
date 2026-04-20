@@ -3,9 +3,11 @@
     "step": {
       "user": {
         "title": "Add Strava athlete",
-        "description": "Give this athlete a display name (e.g. your first name). You will authorize Strava next.",
+        "description": "Give this athlete a display name and the Strava Client ID/Client Secret for this athlete. You will authorize Strava next.",
         "data": {
-          "athlete_name": "Display name"
+          "athlete_name": "Display name",
+          "client_id": "Client ID",
+          "client_secret": "Client Secret"
         }
       },
       "pick_implementation": {

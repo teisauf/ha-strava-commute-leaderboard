@@ -3,9 +3,11 @@
     "step": {
       "user": {
         "title": "Tilføj Strava-atlet",
-        "description": "Giv denne atlet et visningsnavn (f.eks. fornavn). Strava-login sker i næste trin.",
+        "description": "Giv denne atlet et visningsnavn samt Strava Client ID/Client Secret til denne atlet. Strava-login sker i næste trin.",
         "data": {
-          "athlete_name": "Visningsnavn"
+          "athlete_name": "Visningsnavn",
+          "client_id": "Client ID",
+          "client_secret": "Client Secret"
         }
       },
       "pick_implementation": {
