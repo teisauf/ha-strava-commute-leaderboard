@@ -115,8 +115,6 @@ class StravaCommuteOAuthFlow(
                 **data,
                 CONF_ATHLETE_NAME: name,
                 "athlete_id": athlete_id,
-                CONF_CLIENT_ID: self._client_id,
-                CONF_CLIENT_SECRET: self._client_secret,
             },
         )
 
