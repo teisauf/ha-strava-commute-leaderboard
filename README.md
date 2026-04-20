@@ -41,7 +41,7 @@ Bemærk: Hver atlet skal bruge sin egen Strava API-app med eget **Client ID** og
 ## 3. Registrér Strava credentials i HA
 
 1. **Settings → Devices & Services → + Add Integration → Strava Commute Leaderboard**
-2. Udfyld atlets **visningsnavn**, **Client ID** og **Client Secret** fra trin 1.
+2. Udfyld atlets **visningsnavn**, **Client ID** og **Client Secret** fra afsnit 1.
 3. HA sender dig videre til Strava — log ind med **din egen** konto og autorisér.
 
 ### Tilføj partneren
