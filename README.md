@@ -46,9 +46,9 @@ Bemærk: Hver atlet skal bruge sin egen Strava API-app med eget **Client ID** og
 
 ### Tilføj partneren
 
-5. Gentag **Add Integration → Strava Commute Leaderboard**.
-6. Partneren udfylder eget visningsnavn + eget **Client ID/Client Secret** (fra partnerens egen Strava API-app).
-7. Partneren logger ind på Strava (nemt hvis I gør det på partnerens telefon/PC).
+4. Gentag **Add Integration → Strava Commute Leaderboard**.
+5. Partneren udfylder eget visningsnavn + eget **Client ID/Client Secret** (fra partnerens egen Strava API-app).
+6. Partneren logger ind på Strava (nemt hvis I gør det på partnerens telefon/PC).
 
 ---
 
