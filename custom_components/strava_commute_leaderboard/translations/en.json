@@ -3,9 +3,11 @@
     "step": {
       "user": {
         "title": "Add Strava athlete",
-        "description": "Give this athlete a display name (e.g. your first name). You will authorize Strava next.",
+        "description": "Give this athlete a display name and the Strava Client ID/Client Secret for this athlete. You will authorize Strava next.",
         "data": {
-          "athlete_name": "Display name"
+          "athlete_name": "Display name",
+          "client_id": "Client ID",
+          "client_secret": "Client Secret"
         }
       },
       "pick_implementation": {
@@ -23,6 +25,11 @@
       "authorize_url_timeout": "Timed out generating authorize URL.",
       "no_url_available": "No authorize URL available.",
       "user_rejected_authorize": "Authorization was rejected."
+    },
+    "error": {
+      "empty_athlete_name": "Display name cannot be empty.",
+      "empty_client_id": "Client ID cannot be empty.",
+      "empty_client_secret": "Client Secret cannot be empty."
     },
     "create_entry": {
       "default": "Successfully linked Strava athlete."

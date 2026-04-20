@@ -27,10 +27,8 @@ UNSUB_DAILY_KEY = "_daily_refresh_unsub"
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up a Strava athlete from a config entry."""
-    implementation = (
-        await config_entry_oauth2_flow.async_get_config_entry_implementation(
-            hass, entry
-        )
+    implementation = await config_entry_oauth2_flow.async_get_config_entry_implementation(
+        hass, entry
     )
     oauth_session = config_entry_oauth2_flow.OAuth2Session(hass, entry, implementation)
 
