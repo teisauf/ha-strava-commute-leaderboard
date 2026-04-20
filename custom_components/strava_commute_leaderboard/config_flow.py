@@ -33,7 +33,7 @@ _LOGGER = logging.getLogger(__name__)
 class StravaCommuteOAuthFlow(
     config_entry_oauth2_flow.AbstractOAuth2FlowHandler, domain=DOMAIN
 ):
-    """OAuth2 config flow — one entry per athlete."""
+    """OAuth2 config flow — one entry per athlete, each with their own Strava app."""
 
     DOMAIN = DOMAIN
     VERSION = 1
@@ -55,7 +55,7 @@ class StravaCommuteOAuthFlow(
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Step 1: ask for athlete name + app credentials, then kick off OAuth."""
+        """Step 1: ask for athlete name + this athlete's own Strava app credentials."""
         user_schema = vol.Schema(
             {
                 vol.Required(CONF_ATHLETE_NAME): str,
@@ -114,6 +114,8 @@ class StravaCommuteOAuthFlow(
             data={
                 **data,
                 CONF_ATHLETE_NAME: name,
+                CONF_CLIENT_ID: self._client_id,
+                CONF_CLIENT_SECRET: self._client_secret,
                 "athlete_id": athlete_id,
             },
         )
