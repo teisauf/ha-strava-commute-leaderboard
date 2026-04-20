@@ -33,7 +33,7 @@
       "init": {
         "title": "Commute calculation settings",
         "data": {
-          "co2_per_km": "CO₂ saved per km (kg)",
+          "co2_per_km": "CO2 saved per km (kg)",
           "cost_per_km": "Money saved per km",
           "currency": "Currency symbol",
           "streak_tolerance_days": "Streak tolerance (workdays allowed without commute)"
@@ -43,20 +43,20 @@
   },
   "entity": {
     "sensor": {
-      "distance_ytd": {"name": "Commute distance YTD"},
-      "rides_ytd": {"name": "Commute rides YTD"},
-      "time_ytd": {"name": "Commute time YTD"},
-      "elevation_ytd": {"name": "Commute elevation YTD"},
-      "avg_speed": {"name": "Average commute speed"},
-      "streak_current": {"name": "Current streak"},
-      "streak_longest": {"name": "Longest streak"},
-      "days_this_month": {"name": "Commute days this month"},
-      "last_ride": {"name": "Last commute"},
-      "co2_saved": {"name": "CO₂ saved YTD"},
-      "money_saved": {"name": "Money saved YTD"},
-      "leader": {"name": "Current leader"},
-      "margin_km": {"name": "Leader margin"},
-      "margin_percent": {"name": "Leader margin (%)"}
+      "distance_ytd": {"name": "Distance YTD"},
+      "rides_ytd": {"name": "Rides YTD"},
+      "time_ytd": {"name": "Time YTD"},
+      "elevation_ytd": {"name": "Elevation YTD"},
+      "avg_speed": {"name": "Avg speed"},
+      "streak_current": {"name": "Streak current"},
+      "streak_longest": {"name": "Streak longest"},
+      "days_this_month": {"name": "Days this month"},
+      "last_ride": {"name": "Last ride"},
+      "co2_saved": {"name": "CO2 saved"},
+      "money_saved": {"name": "Money saved"},
+      "leader": {"name": "Leader"},
+      "margin_km": {"name": "Margin km"},
+      "margin_percent": {"name": "Margin percent"}
     }
   },
   "services": {
