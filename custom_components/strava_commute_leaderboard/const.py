@@ -25,7 +25,14 @@ DEFAULT_COST_PER_KM = 2.23
 DEFAULT_CURRENCY = "DKK"
 DEFAULT_STREAK_TOLERANCE = 3
 
-RIDE_TYPES = {"Ride", "EBikeRide", "VirtualRide"}
+RIDE_TYPES = {
+    "Ride",
+    "EBikeRide",
+    "VirtualRide",
+    "MountainBikeRide",
+    "GravelRide",
+    "EMountainBikeRide",
+}
 
 STORAGE_VERSION = 1
 STORAGE_KEY_TEMPLATE = "strava_commute_{athlete_id}"
