@@ -119,13 +119,17 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
             raise UpdateFailed(f"Strava API error: {err}") from err
 
         if new_activities:
-            existing_ids = {a["id"] for a in self._cached_activities}
+            existing_by_id = {a["id"]: i for i, a in enumerate(self._cached_activities)}
             for activity in new_activities:
-                if activity["id"] not in existing_ids:
+                idx = existing_by_id.get(activity["id"])
+                if idx is not None:
+                    self._cached_activities[idx] = activity
+                else:
                     self._cached_activities.append(activity)
+            lookback_epoch = int((datetime.now(tz=timezone.utc) - timedelta(days=2)).timestamp())
+            start_of_year_epoch = int(_start_of_year().timestamp())
             self._last_fetched_epoch = max(
-                self._last_fetched_epoch,
-                int(datetime.now(tz=timezone.utc).timestamp()),
+                self._last_fetched_epoch, lookback_epoch, start_of_year_epoch
             )
             await self._async_save_cache()
 
@@ -137,7 +141,8 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
         commutes = [
             a
             for a in self._cached_activities
-            if a.get("commute") is True and a.get("type") in RIDE_TYPES
+            if a.get("commute") is True
+            and (a.get("type") in RIDE_TYPES or a.get("sport_type") in RIDE_TYPES)
         ]
         commutes.sort(key=lambda a: a["start_date"])
 
