@@ -78,7 +78,6 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
             hass, STORAGE_VERSION, STORAGE_KEY_TEMPLATE.format(athlete_id=athlete_id)
         )
         self._cached_activities: list[dict[str, Any]] = []
-        self._last_fetched_epoch: int = 0
         self._api = StravaApi(async_get_clientsession(hass), self._async_get_token)
 
     async def _async_get_token(self) -> str:
@@ -95,21 +94,21 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
             _LOGGER.debug("Cache for athlete %s is from a prior year — discarding", self.athlete_id)
             return
         self._cached_activities = data.get("activities", [])
-        self._last_fetched_epoch = data.get("last_fetched_epoch", 0)
 
     async def _async_save_cache(self) -> None:
         await self._store.async_save(
             {
                 "year": _start_of_year().year,
                 "activities": self._cached_activities,
-                "last_fetched_epoch": self._last_fetched_epoch,
             }
         )
 
     async def _async_update_data(self) -> CommuteStats:
-        after = self._last_fetched_epoch or int(_start_of_year().timestamp())
+        # Refetch the full year: Strava's `after` filter is by start time, so an
+        # incremental window would miss the commute flag being added to older rides.
+        after = int(_start_of_year().timestamp())
         try:
-            new_activities = await self._api.get_activities_since(after)
+            activities = await self._api.get_activities_since(after)
         except StravaRateLimitError:
             _LOGGER.warning(
                 "Strava rate limit hit for athlete %s; reusing cached data", self.athlete_id
@@ -118,20 +117,8 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
         except StravaApiError as err:
             raise UpdateFailed(f"Strava API error: {err}") from err
 
-        if new_activities:
-            existing_by_id = {a["id"]: i for i, a in enumerate(self._cached_activities)}
-            for activity in new_activities:
-                idx = existing_by_id.get(activity["id"])
-                if idx is not None:
-                    self._cached_activities[idx] = activity
-                else:
-                    self._cached_activities.append(activity)
-            lookback_epoch = int((datetime.now(tz=timezone.utc) - timedelta(days=2)).timestamp())
-            start_of_year_epoch = int(_start_of_year().timestamp())
-            self._last_fetched_epoch = max(
-                self._last_fetched_epoch, lookback_epoch, start_of_year_epoch
-            )
-            await self._async_save_cache()
+        self._cached_activities = activities
+        await self._async_save_cache()
 
         return self._aggregate()
 
