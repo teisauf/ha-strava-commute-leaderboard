@@ -19,6 +19,7 @@ CONF_CO2_PER_KM = "co2_per_km"
 CONF_FUEL_EFFICIENCY_KM_PER_L = "fuel_efficiency_km_per_l"
 CONF_FUEL_PRICE_PER_L = "fuel_price_per_l"
 CONF_USE_LIVE_FUEL_PRICE = "use_live_fuel_price"
+CONF_KCAL_PER_KM = "kcal_per_km"
 CONF_CURRENCY = "currency"
 CONF_STREAK_TOLERANCE = "streak_tolerance_days"
 
@@ -26,8 +27,12 @@ DEFAULT_CO2_PER_KM = 0.192
 DEFAULT_FUEL_EFFICIENCY_KM_PER_L = 11.0
 DEFAULT_FUEL_PRICE_PER_L = 14.0
 DEFAULT_USE_LIVE_FUEL_PRICE = True
+DEFAULT_KCAL_PER_KM = 30.0
 DEFAULT_CURRENCY = "DKK"
 DEFAULT_STREAK_TOLERANCE = 3
+
+# Strava reports activity energy in kilojoules; 1 kJ ≈ 0.239 kcal.
+KJ_TO_KCAL = 0.239
 
 RIDE_TYPES = {
     "Ride",

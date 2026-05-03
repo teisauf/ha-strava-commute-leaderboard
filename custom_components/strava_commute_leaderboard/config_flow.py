@@ -17,12 +17,14 @@ from .const import (
     CONF_CURRENCY,
     CONF_FUEL_EFFICIENCY_KM_PER_L,
     CONF_FUEL_PRICE_PER_L,
+    CONF_KCAL_PER_KM,
     CONF_STREAK_TOLERANCE,
     CONF_USE_LIVE_FUEL_PRICE,
     DEFAULT_CO2_PER_KM,
     DEFAULT_CURRENCY,
     DEFAULT_FUEL_EFFICIENCY_KM_PER_L,
     DEFAULT_FUEL_PRICE_PER_L,
+    DEFAULT_KCAL_PER_KM,
     DEFAULT_SCOPE,
     DEFAULT_STREAK_TOLERANCE,
     DEFAULT_USE_LIVE_FUEL_PRICE,
@@ -167,6 +169,10 @@ class StravaCommuteOptionsFlow(OptionsFlow):
                     default=options.get(
                         CONF_FUEL_PRICE_PER_L, DEFAULT_FUEL_PRICE_PER_L
                     ),
+                ): vol.All(vol.Coerce(float), vol.Range(min=0)),
+                vol.Required(
+                    CONF_KCAL_PER_KM,
+                    default=options.get(CONF_KCAL_PER_KM, DEFAULT_KCAL_PER_KM),
                 ): vol.All(vol.Coerce(float), vol.Range(min=0)),
                 vol.Required(
                     CONF_CURRENCY,

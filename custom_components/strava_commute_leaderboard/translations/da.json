@@ -44,6 +44,7 @@
           "fuel_efficiency_km_per_l": "Bilens forbrug (km pr. liter)",
           "use_live_fuel_price": "Hent dagens dieselpris automatisk (Danmark, Q8)",
           "fuel_price_per_l": "Brændstofpris pr. liter (bruges som fallback hvis live-prisen ikke kan hentes)",
+          "kcal_per_km": "Kalorier forbrændt pr. km (fallback når Strava ikke leverer kilojoule)",
           "currency": "Valutasymbol",
           "streak_tolerance_days": "Streak-tolerance (arbejdsdage tilladt uden commute)"
         }
@@ -63,6 +64,7 @@
       "last_ride": {"name": "Seneste commute"},
       "co2_saved": {"name": "CO₂ sparet YTD"},
       "money_saved": {"name": "Penge sparet YTD"},
+      "calories_burned": {"name": "Kalorier forbrændt YTD"},
       "leader": {"name": "Fører lige nu"},
       "margin_km": {"name": "Forspring i km"},
       "margin_percent": {"name": "Forspring i %"}

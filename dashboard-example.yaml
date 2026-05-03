@@ -102,7 +102,7 @@ cards:
       - entity: sensor.weekly_wins_anna
 
   - type: entities
-    title: Sundt for planeten & pengepungen
+    title: Sundt for planeten, pengepungen & kroppen
     entities:
       - entity: sensor.teis_co2_saved
         icon: mdi:leaf
@@ -113,6 +113,27 @@ cards:
         icon: mdi:cash-multiple
       - entity: sensor.anna_money_saved
         icon: mdi:cash-multiple
+      - type: divider
+      - entity: sensor.teis_calories_burned
+        icon: mdi:fire
+      - entity: sensor.anna_calories_burned
+        icon: mdi:fire
+
+  - type: custom:bar-card
+    title: Forbrændte kalorier år-til-dato
+    columns: 1
+    positions:
+      icon: 'off'
+      indicator: inside
+      name: outside
+      value: inside
+    entities:
+      - entity: sensor.teis_calories_burned
+        name: Teis
+        color: '#fc4c02'
+      - entity: sensor.anna_calories_burned
+        name: Anna
+        color: '#2fb5d8'
 
   - type: entities
     title: Detaljerede stats

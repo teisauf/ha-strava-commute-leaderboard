@@ -17,14 +17,17 @@ from .const import (
     CONF_CO2_PER_KM,
     CONF_FUEL_EFFICIENCY_KM_PER_L,
     CONF_FUEL_PRICE_PER_L,
+    CONF_KCAL_PER_KM,
     CONF_STREAK_TOLERANCE,
     CONF_USE_LIVE_FUEL_PRICE,
     DEFAULT_CO2_PER_KM,
     DEFAULT_FUEL_EFFICIENCY_KM_PER_L,
     DEFAULT_FUEL_PRICE_PER_L,
+    DEFAULT_KCAL_PER_KM,
     DEFAULT_STREAK_TOLERANCE,
     DEFAULT_USE_LIVE_FUEL_PRICE,
     DOMAIN,
+    KJ_TO_KCAL,
     RIDE_TYPES,
     STORAGE_KEY_TEMPLATE,
     STORAGE_VERSION,
@@ -51,6 +54,7 @@ class CommuteStats:
     last_ride: datetime | None = None
     co2_saved_kg: float = 0.0
     money_saved: float = 0.0
+    calories_kcal_ytd: float = 0.0
     diesel_price_per_l: float | None = None
     diesel_price_updated: date | None = None
     diesel_price_source: str | None = None
@@ -193,6 +197,8 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
         total_distance_m = 0.0
         total_moving_s = 0
         total_elev = 0.0
+        total_kj = 0.0
+        distance_without_kj_m = 0.0
         days_commuted: set[date] = set()
         today = date.today()
         this_month = (today.year, today.month)
@@ -205,6 +211,11 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
             total_distance_m += distance_m
             total_moving_s += moving_s
             total_elev += elev
+            kj_raw = activity.get("kilojoules")
+            if kj_raw is not None and kj_raw > 0:
+                total_kj += float(kj_raw)
+            else:
+                distance_without_kj_m += distance_m
             started = datetime.fromisoformat(activity["start_date"].replace("Z", "+00:00"))
             local_day = started.astimezone().date()
             days_commuted.add(local_day)
@@ -252,6 +263,13 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
             )
         else:
             stats.money_saved = 0.0
+
+        kcal_per_km = self._options.get(CONF_KCAL_PER_KM, DEFAULT_KCAL_PER_KM)
+        stats.calories_kcal_ytd = round(
+            total_kj * KJ_TO_KCAL + (distance_without_kj_m / 1000.0) * kcal_per_km,
+            0,
+        )
+
         stats.per_week_km = {k: round(v, 1) for k, v in week_totals.items()}
 
         return stats
