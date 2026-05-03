@@ -118,6 +118,15 @@ SENSORS: tuple[CommuteSensorDescription, ...] = (
         suggested_display_precision=0,
         value_fn=lambda s: s.money_saved,
     ),
+    CommuteSensorDescription(
+        key="calories_burned",
+        translation_key="calories_burned",
+        native_unit_of_measurement="kcal",
+        icon="mdi:fire",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        suggested_display_precision=0,
+        value_fn=lambda s: s.calories_kcal_ytd,
+    ),
 )
 
 

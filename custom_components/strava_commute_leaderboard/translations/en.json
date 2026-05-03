@@ -44,6 +44,7 @@
           "fuel_efficiency_km_per_l": "Car fuel efficiency (km per liter)",
           "use_live_fuel_price": "Fetch live diesel price daily (Denmark, Q8)",
           "fuel_price_per_l": "Fuel price per liter (fallback when live price is unavailable)",
+          "kcal_per_km": "Calories burned per km (fallback when Strava has no kilojoules)",
           "currency": "Currency symbol",
           "streak_tolerance_days": "Streak tolerance (workdays allowed without commute)"
         }
@@ -63,6 +64,7 @@
       "last_ride": {"name": "Last ride"},
       "co2_saved": {"name": "CO2 saved"},
       "money_saved": {"name": "Money saved"},
+      "calories_burned": {"name": "Calories burned"},
       "leader": {"name": "Leader"},
       "margin_km": {"name": "Margin km"},
       "margin_percent": {"name": "Margin percent"}
