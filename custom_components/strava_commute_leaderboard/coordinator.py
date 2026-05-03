@@ -15,16 +15,21 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .api import StravaApi, StravaApiError, StravaRateLimitError
 from .const import (
     CONF_CO2_PER_KM,
-    CONF_COST_PER_KM,
+    CONF_FUEL_EFFICIENCY_KM_PER_L,
+    CONF_FUEL_PRICE_PER_L,
     CONF_STREAK_TOLERANCE,
+    CONF_USE_LIVE_FUEL_PRICE,
     DEFAULT_CO2_PER_KM,
-    DEFAULT_COST_PER_KM,
+    DEFAULT_FUEL_EFFICIENCY_KM_PER_L,
+    DEFAULT_FUEL_PRICE_PER_L,
     DEFAULT_STREAK_TOLERANCE,
+    DEFAULT_USE_LIVE_FUEL_PRICE,
     DOMAIN,
     RIDE_TYPES,
     STORAGE_KEY_TEMPLATE,
     STORAGE_VERSION,
 )
+from .fuel_price import FuelPriceResult, fetch_diesel_price
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -46,6 +51,9 @@ class CommuteStats:
     last_ride: datetime | None = None
     co2_saved_kg: float = 0.0
     money_saved: float = 0.0
+    diesel_price_per_l: float | None = None
+    diesel_price_updated: date | None = None
+    diesel_price_source: str | None = None
     per_week_km: dict[str, float] = field(default_factory=dict)
 
 
@@ -78,6 +86,7 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
             hass, STORAGE_VERSION, STORAGE_KEY_TEMPLATE.format(athlete_id=athlete_id)
         )
         self._cached_activities: list[dict[str, Any]] = []
+        self._live_fuel_price: FuelPriceResult | None = None
         self._api = StravaApi(async_get_clientsession(hass), self._async_get_token)
 
     async def _async_get_token(self) -> str:
@@ -85,10 +94,21 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
         return self._oauth_session.token["access_token"]
 
     async def async_load_cache(self) -> None:
-        """Load persisted activity cache from disk."""
+        """Load persisted activity cache and last fetched fuel price from disk."""
         data = await self._store.async_load()
         if data is None:
             return
+        fp = data.get("live_fuel_price")
+        if fp:
+            try:
+                self._live_fuel_price = FuelPriceResult(
+                    price_per_l=float(fp["price_per_l"]),
+                    fetched_on=date.fromisoformat(fp["fetched_on"]),
+                    source=str(fp.get("source", "unknown")),
+                    station_count=int(fp.get("station_count", 0)),
+                )
+            except (KeyError, ValueError, TypeError) as err:
+                _LOGGER.debug("Could not restore cached live fuel price: %s", err)
         cached_year = data.get("year")
         if cached_year != _start_of_year().year:
             _LOGGER.debug("Cache for athlete %s is from a prior year — discarding", self.athlete_id)
@@ -96,14 +116,50 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
         self._cached_activities = data.get("activities", [])
 
     async def _async_save_cache(self) -> None:
-        await self._store.async_save(
-            {
-                "year": _start_of_year().year,
-                "activities": self._cached_activities,
+        payload: dict[str, Any] = {
+            "year": _start_of_year().year,
+            "activities": self._cached_activities,
+        }
+        if self._live_fuel_price is not None:
+            payload["live_fuel_price"] = {
+                "price_per_l": self._live_fuel_price.price_per_l,
+                "fetched_on": self._live_fuel_price.fetched_on.isoformat(),
+                "source": self._live_fuel_price.source,
+                "station_count": self._live_fuel_price.station_count,
             }
+        await self._store.async_save(payload)
+
+    async def _async_refresh_fuel_price(self) -> None:
+        """Fetch today's diesel price if we haven't already.
+
+        Falls back silently to the cached value (or None) on any failure;
+        the aggregator handles the manual-price fallback.
+        """
+        use_live = self._options.get(
+            CONF_USE_LIVE_FUEL_PRICE, DEFAULT_USE_LIVE_FUEL_PRICE
         )
+        if not use_live:
+            self._live_fuel_price = None
+            return
+        today = date.today()
+        if (
+            self._live_fuel_price is not None
+            and self._live_fuel_price.fetched_on == today
+        ):
+            return
+        result = await fetch_diesel_price(async_get_clientsession(self.hass))
+        if result is not None:
+            self._live_fuel_price = result
+        elif self._live_fuel_price is not None:
+            _LOGGER.info(
+                "Live diesel price fetch failed; reusing cached price from %s",
+                self._live_fuel_price.fetched_on,
+            )
 
     async def _async_update_data(self) -> CommuteStats:
+        # Refresh the diesel price first so any code path below sees today's price.
+        await self._async_refresh_fuel_price()
+
         # Refetch the full year: Strava's `after` filter is by start time, so an
         # incremental window would miss the commute flag being added to older rides.
         after = int(_start_of_year().timestamp())
@@ -113,6 +169,7 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
             _LOGGER.warning(
                 "Strava rate limit hit for athlete %s; reusing cached data", self.athlete_id
             )
+            await self._async_save_cache()
             return self._aggregate()
         except StravaApiError as err:
             raise UpdateFailed(f"Strava API error: {err}") from err
@@ -172,9 +229,29 @@ class StravaCommuteCoordinator(DataUpdateCoordinator[CommuteStats]):
         )
 
         co2_per_km = self._options.get(CONF_CO2_PER_KM, DEFAULT_CO2_PER_KM)
-        cost_per_km = self._options.get(CONF_COST_PER_KM, DEFAULT_COST_PER_KM)
+        fuel_efficiency = self._options.get(
+            CONF_FUEL_EFFICIENCY_KM_PER_L, DEFAULT_FUEL_EFFICIENCY_KM_PER_L
+        )
+        manual_fuel_price = self._options.get(
+            CONF_FUEL_PRICE_PER_L, DEFAULT_FUEL_PRICE_PER_L
+        )
+        if self._live_fuel_price is not None:
+            effective_price = self._live_fuel_price.price_per_l
+            stats.diesel_price_source = self._live_fuel_price.source
+            stats.diesel_price_updated = self._live_fuel_price.fetched_on
+        else:
+            effective_price = manual_fuel_price
+            stats.diesel_price_source = "manual"
+            stats.diesel_price_updated = None
+        stats.diesel_price_per_l = effective_price
+
         stats.co2_saved_kg = round(stats.distance_km_ytd * co2_per_km, 1)
-        stats.money_saved = round(stats.distance_km_ytd * cost_per_km, 2)
+        if fuel_efficiency > 0:
+            stats.money_saved = round(
+                (stats.distance_km_ytd / fuel_efficiency) * effective_price, 2
+            )
+        else:
+            stats.money_saved = 0.0
         stats.per_week_km = {k: round(v, 1) for k, v in week_totals.items()}
 
         return stats
