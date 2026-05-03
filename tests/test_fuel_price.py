@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from custom_components.strava_commute_leaderboard.fuel_price import (
+from fuel_price import (
     FuelPriceResult,
     _q8_diesel_prices,
     _shell_diesel_prices,
