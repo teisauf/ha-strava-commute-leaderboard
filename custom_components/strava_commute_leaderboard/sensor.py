@@ -179,6 +179,22 @@ class CommuteSensor(CoordinatorEntity[StravaCommuteCoordinator], SensorEntity):
             return None
         return self.entity_description.value_fn(self.coordinator.data)
 
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        if self.entity_description.key != "money_saved":
+            return None
+        if self.coordinator.data is None:
+            return None
+        s = self.coordinator.data
+        attrs: dict[str, Any] = {}
+        if s.diesel_price_per_l is not None:
+            attrs["diesel_price_per_l"] = s.diesel_price_per_l
+        if s.diesel_price_source is not None:
+            attrs["diesel_price_source"] = s.diesel_price_source
+        if s.diesel_price_updated is not None:
+            attrs["diesel_price_updated"] = s.diesel_price_updated.isoformat()
+        return attrs or None
+
 
 def _build_comparison_sensors(
     coordinators: list[StravaCommuteCoordinator],

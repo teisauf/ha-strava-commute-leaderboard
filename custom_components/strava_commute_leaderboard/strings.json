@@ -41,7 +41,9 @@
         "title": "Commute calculation settings",
         "data": {
           "co2_per_km": "CO2 saved per km (kg)",
-          "cost_per_km": "Money saved per km",
+          "fuel_efficiency_km_per_l": "Car fuel efficiency (km per liter)",
+          "use_live_fuel_price": "Fetch live diesel price daily (Denmark, Q8)",
+          "fuel_price_per_l": "Fuel price per liter (fallback when live price is unavailable)",
           "currency": "Currency symbol",
           "streak_tolerance_days": "Streak tolerance (workdays allowed without commute)"
         }

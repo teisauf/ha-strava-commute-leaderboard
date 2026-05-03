@@ -1,0 +1,3 @@
+refresh:
+  name: Refresh Strava data
+  description: Manually trigger a fetch of new commute activities for all configured athletes.

@@ -41,7 +41,9 @@
         "title": "Beregning af commute-stats",
         "data": {
           "co2_per_km": "CO₂ sparet per km (kg)",
-          "cost_per_km": "Penge sparet per km",
+          "fuel_efficiency_km_per_l": "Bilens forbrug (km pr. liter)",
+          "use_live_fuel_price": "Hent dagens dieselpris automatisk (Danmark, Q8)",
+          "fuel_price_per_l": "Brændstofpris pr. liter (bruges som fallback hvis live-prisen ikke kan hentes)",
           "currency": "Valutasymbol",
           "streak_tolerance_days": "Streak-tolerance (arbejdsdage tilladt uden commute)"
         }
